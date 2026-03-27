@@ -108,22 +108,38 @@ All settings can be overridden via `.env`:
 
 ## Deployment
 
-This app runs a Python server and **cannot** be hosted on GitHub Pages (which only serves static files).
+> GitHub Pages only hosts static HTML/CSS/JS and cannot run Python apps. Use one of the options below instead.
 
-### Option A — Streamlit Community Cloud (free)
-1. Push this repo to GitHub
-2. Go to [share.streamlit.io](https://share.streamlit.io) and connect your repo
-3. **Note:** Ollama is a local service and won't be available in the cloud. You'll need to swap the LLM backend to a cloud API (e.g. Claude API or OpenAI) before deploying.
+### Option A — Streamlit Community Cloud (free, recommended)
 
-### Option B — Run locally and share via ngrok
+1. Get an [Anthropic API key](https://console.anthropic.com/) — required since Ollama is local and won't be available in the cloud
+2. Push this repo to GitHub (already done)
+3. Go to [share.streamlit.io](https://share.streamlit.io) → **New app** → select your repo → `main.py`
+4. Under **Advanced settings → Secrets**, add:
+   ```toml
+   ANTHROPIC_API_KEY = "sk-ant-..."
+   ```
+5. Click **Deploy**
+
+The app automatically uses Claude API when `ANTHROPIC_API_KEY` is set, and falls back to Ollama when running locally.
+
+### Option B — Share locally via ngrok (no sign-up needed)
+
 ```bash
-# Install ngrok, then:
+# Install ngrok at ngrok.com, then:
 ngrok http 8501
 ```
-This gives you a temporary public URL without changing any code.
 
-### Option C — Self-host
-Deploy to any Linux server (VPS, EC2, etc.) with Python and Ollama installed. Run `streamlit run main.py` behind a reverse proxy like Nginx.
+Gives you a temporary public URL in seconds without changing any code.
+
+### Option C — Self-host on a VPS
+
+Deploy to any Linux server (VPS, EC2, etc.) with Python installed:
+```bash
+pip install -r requirements.txt
+ANTHROPIC_API_KEY=sk-ant-... streamlit run main.py --server.port 80
+```
+Put Nginx in front for SSL.
 
 ---
 
